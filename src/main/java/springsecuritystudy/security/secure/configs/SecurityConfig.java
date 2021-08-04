@@ -1,9 +1,11 @@
 package springsecuritystudy.security.secure.configs;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +20,12 @@ import springsecuritystudy.security.secure.provider.CustomAuthenticationProvider
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public final AuthenticationDetailsSource authenticationDetailsSource;
+
+    public SecurityConfig(AuthenticationDetailsSource authenticationDetailsSource) {
+        this.authenticationDetailsSource = authenticationDetailsSource;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .formLogin().loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
                 .permitAll();
     }
