@@ -1,46 +1,59 @@
 package springsecuritystudy.security.controller.user;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import springsecuritystudy.security.domain.Account;
-import springsecuritystudy.security.domain.AccountDto;
+import springsecuritystudy.security.domain.dto.AccountDto;
+import springsecuritystudy.security.domain.entity.Account;
+import springsecuritystudy.security.repository.RoleRepository;
 import springsecuritystudy.security.service.UserService;
 
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @Controller
-@AllArgsConstructor
 public class UserController {
 
-    private PasswordEncoder passwordEncoder;
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @GetMapping("/mypage")
-    public String myPage() {
-        return "user/mypage";
-    }
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @GetMapping("/users")
-    public String createUser() {
-        return "user/login/register";
-    }
+	@Autowired
+	private RoleRepository roleRepository;
 
-    @PostMapping("/users")
-    public String createUser(@ModelAttribute AccountDto accountDto) {
+	@GetMapping(value="/users")
+	public String createUser() throws Exception {
 
-        Account account = new Account(
-                accountDto.getUsername(),
-                accountDto.getPassword(),
-                accountDto.getEmail(),
-                accountDto.getAge(),
-                accountDto.getRole()
-        );
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        userService.createUser(account);
+		return "user/login/register";
+	}
 
-        return "redirect:/";
-    }
+	@PostMapping(value="/users")
+	public String createUser(AccountDto accountDto) throws Exception {
+
+		ModelMapper modelMapper = new ModelMapper();
+		Account account = modelMapper.map(accountDto, Account.class);
+		account.setPassword(passwordEncoder.encode(accountDto.getPassword()));
+
+		userService.createUser(account);
+
+		return "redirect:/";
+	}
+
+	@GetMapping(value="/mypage")
+	public String myPage(@AuthenticationPrincipal Account account, Authentication authentication, Principal principal) throws Exception {
+
+
+		return "user/mypage";
+	}
 }
