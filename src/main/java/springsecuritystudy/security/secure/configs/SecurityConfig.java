@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,13 +20,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import springsecuritystudy.security.secure.common.FormAuthenticationDetailsSource;
+import springsecuritystudy.security.secure.filter.AjaxLoginProcessingFilter;
 import springsecuritystudy.security.secure.handler.CustomAccessDeniedHandler;
 import springsecuritystudy.security.secure.provider.CustomAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
+@Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
