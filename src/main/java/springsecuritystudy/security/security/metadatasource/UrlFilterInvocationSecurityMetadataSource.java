@@ -25,18 +25,11 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         HttpServletRequest request = ((FilterInvocation) object).getRequest();
 
-        requestMap.put(
-            new AntPathRequestMatcher("/mypage"),
-            Arrays.asList(new SecurityConfig("ROLE_USER"))
-        );
-
         if(requestMap != null) {
             Set<Map.Entry<RequestMatcher, List<ConfigAttribute>>> entries = requestMap.entrySet();
             for (Map.Entry<RequestMatcher, List<ConfigAttribute>> entry : entries) {
                 RequestMatcher matcher = entry.getKey();
-                if(matcher.matches(request)) {
-                    return entry.getValue();
-                }
+                if(matcher.matches(request)) {return entry.getValue();}
             }
         }
 
