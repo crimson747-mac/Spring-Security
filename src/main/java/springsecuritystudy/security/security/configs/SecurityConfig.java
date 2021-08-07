@@ -1,6 +1,7 @@
 package springsecuritystudy.security.security.configs;
 
 import springsecuritystudy.security.security.common.FormWebAuthenticationDetailsSource;
+import springsecuritystudy.security.security.factory.UrlResourcesMapFactoryBean;
 import springsecuritystudy.security.security.handler.AjaxAuthenticationFailureHandler;
 import springsecuritystudy.security.security.handler.AjaxAuthenticationSuccessHandler;
 import springsecuritystudy.security.security.handler.FormAccessDeniedHandler;
@@ -31,9 +32,11 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import springsecuritystudy.security.service.SecurityResourceService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
     @Autowired
     private AuthenticationFailureHandler formAuthenticationFailureHandler;
+    @Autowired
+    private SecurityResourceService securityResourceService;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -131,7 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return commonAccessDeniedHandler;
     }
 
-    @Bean //추가
+    @Bean
     public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
 
         FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
@@ -142,17 +147,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filterSecurityInterceptor;
     }
 
-    @Bean //추가
-    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetaDataSource() {
-        return new UrlFilterInvocationSecurityMetadataSource();
+    @Bean
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetaDataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject());
     }
 
-    //추가
+    private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
+        UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
+        urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
+
+        return urlResourcesMapFactoryBean;
+    }
+
     private AccessDecisionManager affirmativeBased() {
         return new AffirmativeBased(getAccessDecisionVoters());
     }
 
-    //추가
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
         return Arrays.asList(new RoleVoter());
     }

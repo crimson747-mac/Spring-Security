@@ -14,7 +14,12 @@ import java.util.*;
 
 public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
+    // 순서 보장
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+
+    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap) {
+        this.requestMap = resourcesMap;
+    }
 
     @Override //실질적인 구현부
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
