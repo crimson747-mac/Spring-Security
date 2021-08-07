@@ -4,7 +4,7 @@ import springsecuritystudy.security.security.common.FormWebAuthenticationDetails
 import springsecuritystudy.security.security.handler.AjaxAuthenticationFailureHandler;
 import springsecuritystudy.security.security.handler.AjaxAuthenticationSuccessHandler;
 import springsecuritystudy.security.security.handler.FormAccessDeniedHandler;
-import springsecuritystudy.security.security.metadatasource.UrlFilterInvocationSecurityMetadatsSource;
+import springsecuritystudy.security.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import springsecuritystudy.security.security.provider.AjaxAuthenticationProvider;
 import springsecuritystudy.security.security.provider.FormAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -67,9 +67,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/mypage").hasRole("USER")
-                .antMatchers("/messages").hasRole("MANAGER")
-                .antMatchers("/config").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -86,9 +83,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 .accessDeniedPage("/denied")
                 .accessDeniedHandler(accessDeniedHandler())
-//        .and()
-//                .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
-        ;
+        .and()// filterInterceptor 는 두 번 적용되지 않는다 따라서 먼저 적용된 인터셉터가 있다면 뒤의 인터셉터는 그냥 PASS
+                .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
 
         http.csrf().disable();
 
@@ -135,29 +131,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return commonAccessDeniedHandler;
     }
 
-    @Bean
+    @Bean //추가
     public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
 
         FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetaDataSource());
         filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
         filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
+
         return filterSecurityInterceptor;
     }
 
-    private AccessDecisionManager affirmativeBased() {
-        AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecistionVoters());
-        return affirmativeBased;
+    @Bean //추가
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetaDataSource() {
+        return new UrlFilterInvocationSecurityMetadataSource();
     }
 
-    private List<AccessDecisionVoter<?>> getAccessDecistionVoters() {
+    //추가
+    private AccessDecisionManager affirmativeBased() {
+        return new AffirmativeBased(getAccessDecisionVoters());
+    }
+
+    //추가
+    private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
         return Arrays.asList(new RoleVoter());
     }
-
-    @Bean
-    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
-        return new UrlFilterInvocationSecurityMetadatsSource();
-    }
-
-
 }
