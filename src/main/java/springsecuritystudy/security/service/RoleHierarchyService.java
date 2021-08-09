@@ -1,2 +1,5 @@
-package springsecuritystudy.security.service;public interface RoleHierarchyService {
+package springsecuritystudy.security.service;
+
+public interface RoleHierarchyService {
+    String findAllHierarchy();
 }
