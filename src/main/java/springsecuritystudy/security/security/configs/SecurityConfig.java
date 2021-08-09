@@ -2,6 +2,7 @@ package springsecuritystudy.security.security.configs;
 
 import springsecuritystudy.security.security.common.FormWebAuthenticationDetailsSource;
 import springsecuritystudy.security.security.factory.UrlResourcesMapFactoryBean;
+import springsecuritystudy.security.security.filter.PermitAllFilter;
 import springsecuritystudy.security.security.handler.AjaxAuthenticationFailureHandler;
 import springsecuritystudy.security.security.handler.AjaxAuthenticationSuccessHandler;
 import springsecuritystudy.security.security.handler.FormAccessDeniedHandler;
@@ -51,6 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationFailureHandler formAuthenticationFailureHandler;
     @Autowired
     private SecurityResourceService securityResourceService;
+
+    private String[] permitAllResources = {"/", "/login", "/user/login/**"};
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -137,14 +140,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
+    public PermitAllFilter customFilterSecurityInterceptor() throws Exception {
 
-        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetaDataSource());
-        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
+        PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllResources);
+        permitAllFilter.setSecurityMetadataSource(urlFilterInvocationSecurityMetaDataSource());
+        permitAllFilter.setAccessDecisionManager(affirmativeBased());
+        permitAllFilter.setAuthenticationManager(authenticationManagerBean());
 
-        return filterSecurityInterceptor;
+        return permitAllFilter;
     }
 
     @Bean
