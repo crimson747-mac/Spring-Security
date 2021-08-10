@@ -3,6 +3,7 @@ package springsecuritystudy.security.security.configs;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import springsecuritystudy.security.security.common.FormWebAuthenticationDetailsSource;
 import springsecuritystudy.security.security.factory.UrlResourcesMapFactoryBean;
 import springsecuritystudy.security.security.filter.PermitAllFilter;
@@ -46,6 +47,7 @@ import java.util.ResourceBundle;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
