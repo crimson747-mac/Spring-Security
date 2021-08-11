@@ -47,7 +47,6 @@ import java.util.ResourceBundle;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
