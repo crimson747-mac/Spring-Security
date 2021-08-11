@@ -52,8 +52,12 @@ public class UserController {
 
 	@GetMapping(value="/mypage")
 	public String myPage(@AuthenticationPrincipal Account account, Authentication authentication, Principal principal) throws Exception {
-		userService.order();
+		return "user/mypage";
+	}
 
+	@GetMapping("/order")
+	public String order() {
+		userService.order();
 		return "user/mypage";
 	}
 }
